@@ -4,7 +4,7 @@
   "description": "Checkout.fi library for Node.js",
   "main": "src/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha -R spec tests/test-*.js"
   },
   "repository": {
     "type": "git",
@@ -12,6 +12,14 @@
   },
   "author": "Jaakko-Heikki Heusala <jheusala@iki.fi>",
   "license": "MIT",
+  "dependencies": {
+    "q": "*"
+  },
+  "devDependencies": {
+    "lint": "*",
+    "mocha": "*",
+    "nor-is": "*"
+  },
   "bugs": {
     "url": "https://github.com/Sendanor/node-checkoutfi/issues"
   }

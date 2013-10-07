@@ -55,7 +55,7 @@ checkoutfi.parsePaymentOptions = function(opts) {
 
 		if(opts[key] === undefined) {
 			if(type.required) {
-				throw new TypeError("Bad input: Missing key " + key);
+				throw new TypeError("Bad input: Missing property: " + key);
 			}
 		} else {
 			opts[key] = (''+opts[key]).trim();
@@ -99,4 +99,45 @@ checkoutfi.getPaymentObject = function(opts) {
 	return opts;
 };
 
-/* */
+/** HTTP request */
+checkoutfi._request = function(post) {
+	post = post || {};
+
+	var defer = require('Q').defer();
+
+	var options = {
+		hostname: 'payment.checkout.fi',
+		port: 443,
+		path: '/',
+		method: 'POST'
+	};
+	
+	var req = require('https').request(options, function(res) {
+		console.log('STATUS: ' + res.statusCode);
+		console.log('HEADERS: ' + JSON.stringify(res.headers));
+		res.setEncoding('utf8');
+		var buffer = "";
+		res.on('data', function (chunk) {
+			buffer += chunk;
+		});
+		res.on('end', function() {
+			if(res.statusCode === 200) {
+				defer.resolve(buffer);
+			} else {
+				defer.reject('HTTP Status code was ' + res.statusCode + ': ' + buffer);
+			}
+		});
+	});
+	
+	req.on('error', function(e) {
+		defer.reject(e);
+	});
+	
+	// write data to request body
+	req.write( require('querystring').stringify(post) );
+	req.end();
+	
+	return defer.promise;
+}
+
+/* EOF */
